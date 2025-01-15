@@ -1,0 +1,11 @@
+fastapi
+uvicorn 
+pydantic 
+requests 
+polyline
+openmeteo-requests
+requests-cache 
+retry-requests 
+numpy 
+pandas
+matplotlib
