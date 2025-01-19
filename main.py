@@ -26,11 +26,99 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+OPEN_METEO_API_URL = "https://api.open-meteo.com/v1/forecast"
+
 @app.get("/")
 async def home():
     return {"message": "Hello, World!"}
 
 # ---------------------------------------------------------------------------------------
+
+@app.get("/current-weather")
+async def get_current_weather(latitude: float, longitude: float):
+    params = {
+        "latitude": latitude,
+        "longitude": longitude,
+        "current_weather": True,
+        "timezone": "auto"
+    }
+    response = requests.get(OPEN_METEO_API_URL, params=params)
+    return response.json()
+
+
+@app.get("/air-quality")
+async def get_air_quality(latitude: float, longitude: float):
+    params = {
+        "latitude": latitude,
+        "longitude": longitude,
+        "hourly": "pm10,pm2_5,carbon_monoxide,nitrogen_dioxide",
+        "timezone": "auto"
+    }
+    response = requests.get(OPEN_METEO_API_URL, params=params)
+    return response.json()
+
+
+@app.get("/weather-alerts")
+async def get_weather_alerts(latitude: float, longitude: float):
+    params = {
+        "latitude": latitude,
+        "longitude": longitude,
+        "current_weather": True,  # Adjust according to available alert data
+        "timezone": "auto"
+    }
+    response = requests.get(OPEN_METEO_API_URL, params=params)
+    return response.json()
+
+
+@app.get("/historical-weather")
+async def get_historical_weather(latitude: float, longitude: float, date: str):
+    params = {
+        "latitude": latitude,
+        "longitude": longitude,
+        "past_days": 1,  # You can customize this
+        "timezone": "auto"
+    }
+    response = requests.get(OPEN_METEO_API_URL, params=params)
+    return response.json()
+
+@app.get("/daily-summary")
+async def get_daily_summary(latitude: float, longitude: float, start_date: str, end_date: str):
+    params = {
+        "latitude": latitude,
+        "longitude": longitude,
+        "daily": "temperature_2m_max,temperature_2m_min,sunrise,sunset",
+        "start_date": start_date,
+        "end_date": end_date,
+        "timezone": "auto"
+    }
+    response = requests.get(OPEN_METEO_API_URL, params=params)
+    return response.json()
+
+
+@app.get("/compare-weather")
+async def compare_weather(lat1: float, lon1: float, lat2: float, lon2: float, date: str):
+    params1 = {
+        "latitude": lat1,
+        "longitude": lon1,
+        "hourly": "temperature_2m,precipitation",
+        "start_date": date,
+        "end_date": date,
+        "timezone": "auto"
+    }
+    params2 = {
+        "latitude": lat2,
+        "longitude": lon2,
+        "hourly": "temperature_2m,precipitation",
+        "start_date": date,
+        "end_date": date,
+        "timezone": "auto"
+    }
+    response1 = requests.get(OPEN_METEO_API_URL, params=params1)
+    response2 = requests.get(OPEN_METEO_API_URL, params=params2)
+    return {
+        "location1": response1.json(),
+        "location2": response2.json()
+    }
 
 
 @app.post("/weather")
@@ -47,13 +135,12 @@ async def get_weather(data: dict):
         retry_session = retry(cache_session, retries=5, backoff_factor=0.2)
         openmeteo = openmeteo_requests.Client(session=retry_session)
 
-        url = "https://api.open-meteo.com/v1/forecast"
         params = {
             "latitude": latitude,
             "longitude": longitude,
             "hourly": "temperature_2m"
         }
-        responses = openmeteo.weather_api(url, params=params)
+        responses = openmeteo.weather_api(OPEN_METEO_API_URL, params=params)
         response = responses[0]
 
         hourly = response.Hourly()

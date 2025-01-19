@@ -52,6 +52,12 @@ This project provides a FastAPI-based web service to fetch and visualize weather
     ```
 - **Response:** Returns a plot image file showing the hourly temperature over time.
 
+### API Documentation
+
+- Visit `http://localhost:8000/docs` to access the interactive API documentation and test the available endpoints directly from your browser.
+- Alternatively, you can use Postman to test the API endpoints by sending requests to `http://localhost:8000`.
+
+
 ## Example Request
 
 ```sh
