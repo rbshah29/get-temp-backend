@@ -6,8 +6,8 @@ This project provides a FastAPI-based web service to fetch and visualize weather
 
 1. Clone the repository:
     ```sh
-    git clone <repository_url>
-    cd <repository_directory>
+    git clone https://github.com/rbshah29/get-temp-backend.git
+    cd get-temp-backend
     ```
 
 2. Create a virtual environment and activate it:
